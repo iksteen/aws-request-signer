@@ -44,7 +44,26 @@ class AwsRequestSigner:
         :param service: The service to connect to (f.e. `'s3'`).
         :return: A tuple containing the aforementioned credential scope.
         """
-        return (timestamp[:8], self.region, service, "aws4_request")
+        return timestamp[:8], self.region, service, "aws4_request"
+
+    def _sign(self, credential_scope: CredentialScope, string_to_sign: str) -> str:
+        """
+        Sign a string using the credentials and given scope.
+
+        :param credential_scope: The credential scope as returned by
+            _get_credential_scope.
+        :param string_to_sign: The string to sign.
+        :return: The hex-encoded signature.
+        """
+        signing_key = ("AWS4" + self.secret_access_key).encode("utf-8")
+        for element in credential_scope:
+            signing_key = hmac.new(
+                signing_key, element.encode("utf-8"), hashlib.sha256
+            ).digest()
+
+        return hmac.new(
+            signing_key, string_to_sign.encode("utf-8"), hashlib.sha256
+        ).hexdigest()
 
     def _get_canonical_headers(
         self, host: str, headers: Mapping[str, str]
@@ -126,17 +145,7 @@ class AwsRequestSigner:
             )
         )
 
-        signing_key = ("AWS4" + self.secret_access_key).encode("utf8")
-        for element in credential_scope:
-            signing_key = hmac.new(
-                signing_key, element.encode("utf-8"), hashlib.sha256
-            ).digest()
-
-        signature = hmac.new(
-            signing_key, string_to_sign.encode("utf-8"), hashlib.sha256
-        ).hexdigest()
-
-        return signature
+        return self._sign(credential_scope, string_to_sign)
 
     def sign_with_headers(
         self,
