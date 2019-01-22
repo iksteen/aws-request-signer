@@ -1,8 +1,10 @@
+import base64
 import datetime
 import hashlib
 import hmac
+import json
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
-from typing import Dict, Optional, Tuple, List, Mapping
+from typing import Dict, Optional, Tuple, List, Mapping, Any
 
 __all__ = ["AwsRequestSigner", "UNSIGNED_PAYLOAD"]
 
@@ -45,6 +47,9 @@ class AwsRequestSigner:
         :return: A tuple containing the aforementioned credential scope.
         """
         return timestamp[:8], self.region, service, "aws4_request"
+
+    def _get_credential(self, credential_scope: CredentialScope) -> str:
+        return "/".join((self.access_key_id,) + credential_scope)
 
     def _sign(self, credential_scope: CredentialScope, string_to_sign: str) -> str:
         """
@@ -203,7 +208,7 @@ class AwsRequestSigner:
             credential_scope,
         )
 
-        credential = "/".join((self.access_key_id,) + credential_scope)
+        credential = self._get_credential(credential_scope)
 
         authorization_header = (
             "{algorithm} "
@@ -264,7 +269,7 @@ class AwsRequestSigner:
         signed_headers = self._get_signed_headers(canonical_headers)
 
         credential_scope = self._get_credential_scope(timestamp, service)
-        credential = "/".join((self.access_key_id,) + credential_scope)
+        credential = self._get_credential(credential_scope)
 
         query = parse_qsl(parsed_url.query, True)
         query.extend(
@@ -299,3 +304,33 @@ class AwsRequestSigner:
                 parsed_url.fragment,
             )
         )
+
+    def sign_s3_post_policy(self, policy: Dict[str, Any]) -> Dict[str, str]:
+        """
+        Sign an S3 POST policy as used by browser based uploads.
+        :param policy: The POST policy to sign.
+        :return: All the required POST field to use the policy.
+        """
+        required_keys = {"expiration", "conditions"}
+        if policy.keys() & required_keys != required_keys:
+            raise ValueError(
+                "POST policy should contain expiration and conditions keys"
+            )
+
+        timestamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+
+        credential_scope = self._get_credential_scope(timestamp, "s3")
+        credential = self._get_credential(credential_scope)
+
+        policy_json = json.dumps(policy).encode("utf-8")
+        encoded_policy = base64.b64encode(policy_json).decode("utf-8")
+
+        signature = self._sign(credential_scope, encoded_policy)
+
+        return {
+            "policy": encoded_policy,
+            "x-amz-algorithm": self.algorithm,
+            "x-amz-credential": credential,
+            "x-amz-date": timestamp,
+            "x-amz-signature": signature,
+        }

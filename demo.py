@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 
 import requests
@@ -73,6 +74,29 @@ def main() -> None:
 
     # Perform the request.
     r = session.put(URL, data=content)
+    r.raise_for_status()
+
+    #
+    # Use AWS request signer to sign an S3 POST policy request.
+    #
+
+    # Create a policy, only restricting bucket and expiration.
+    expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
+    policy = {
+        "expiration": expiration.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "conditions": [{"bucket": "demo"}],
+    }
+
+    # Get the required form fields to use the policy.
+    fields = request_signer.sign_s3_post_policy(policy)
+
+    # Post the form data to the bucket endpoint.
+    # Set key (filename) to hello_world.txt.
+    r = requests.post(
+        URL.rsplit("/", 1)[0],
+        data={"key": "hello_world.txt", "Content-Type": "text/plain", **fields},
+        files={"file": content},
+    )
     r.raise_for_status()
 
 
