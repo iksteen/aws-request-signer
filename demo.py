@@ -1,0 +1,80 @@
+import hashlib
+
+import requests
+from requests_toolbelt.auth.handler import AuthHandler
+
+from aws_request_signer import UNSIGNED_PAYLOAD, AwsRequestSigner
+from aws_request_signer.requests import AwsAuth
+
+AWS_REGION = ""
+AWS_ACCESS_KEY_ID = "minio"
+AWS_SECRET_ACCESS_KEY = "minio123"
+
+URL = "http://127.0.0.1:9000/demo/hello_world.txt"
+
+
+def main() -> None:
+    # Demo content for our target file.
+    content = b"Hello, World!\n"
+    content_hash = hashlib.sha256(content).hexdigest()
+
+    # Create a request signer instance.
+    request_signer = AwsRequestSigner(
+        AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+    )
+
+    #
+    # Use AWS request signer to generate authentication headers.
+    #
+
+    # The headers we'll provide and want to sign.
+    headers = {"Content-Type": "text/plain", "Content-Length": str(len(content))}
+
+    # Add the authentication headers.
+    headers.update(
+        request_signer.sign_with_headers("s3", "PUT", URL, headers, content_hash)
+    )
+
+    # Make the request.
+    r = requests.put(URL, headers=headers, data=content)
+    r.raise_for_status()
+
+    #
+    # Use AWS request signer to generate a pre-signed URL.
+    #
+
+    # The headers we'll provide and want to sign.
+    headers = {"Content-Type": "text/plain", "Content-Length": str(len(content))}
+
+    # Generate the pre-signed URL that includes the authentication
+    # parameters. Allow the client to determine the contents by
+    # settings the content_has to UNSIGNED-PAYLOAD.
+    presigned_url = request_signer.presign_url(
+        "s3", "PUT", URL, headers, UNSIGNED_PAYLOAD
+    )
+
+    # Perform the request.
+    r = requests.put(presigned_url, headers=headers, data=content)
+    r.raise_for_status()
+
+    #
+    # Use AWS request signer for requests helper to perform requests.
+    #
+
+    # Create a requests session and assign auth handler.
+    session = requests.Session()
+    session.auth = AuthHandler(
+        {
+            "http://127.0.0.1:9000": AwsAuth(
+                AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, "s3"
+            )
+        }
+    )
+
+    # Perform the request.
+    r = session.put(URL, data=content)
+    r.raise_for_status()
+
+
+if __name__ == "__main__":
+    main()
