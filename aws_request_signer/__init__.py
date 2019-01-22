@@ -38,8 +38,10 @@ class AwsRequestSigner:
         Internal method. Generates a credential scope containing a datestamp, the region,
         the service and a marker.
 
-        :param timestamp:
-        :param service:
+        :param timestamp: The timestamp on which day the credential is
+            valid. Should be in RFC1123Z format (20190122T170000Z) or just
+            yyyymmdd.
+        :param service: The service to connect to (f.e. `'s3'`).
         :return: A tuple containing the aforementioned credential scope.
         """
         return (timestamp[:8], self.region, service, "aws4_request")
