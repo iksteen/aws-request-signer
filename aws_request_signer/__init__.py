@@ -16,7 +16,9 @@ CredentialScope = Tuple[str, str, str, str]
 class AwsRequestSigner:
     algorithm = "AWS4-HMAC-SHA256"
 
-    def __init__(self, region: str, access_key_id: str, secret_access_key: str) -> None:
+    def __init__(
+        self, region: str, access_key_id: str, secret_access_key: str, service: str
+    ) -> None:
         """
         Create a new instance of the AwsRequestSigner.
 
@@ -29,13 +31,15 @@ class AwsRequestSigner:
         :param region: The AWS region to connect to.
         :param access_key_id: The AWS access key id to use for authentication.
         :param secret_access_key: The AWS secret access key to use for authentication.
+        :param service: The AWS service to generate signatures for.
         """
 
         self.region = region
         self.access_key_id = access_key_id
         self.secret_access_key = secret_access_key
+        self.service = service
 
-    def _get_credential_scope(self, timestamp: str, service: str) -> CredentialScope:
+    def _get_credential_scope(self, timestamp: str) -> CredentialScope:
         """
         Internal method. Generates a credential scope containing a datestamp, the region,
         the service and a marker.
@@ -43,10 +47,9 @@ class AwsRequestSigner:
         :param timestamp: The timestamp on which day the credential is
             valid. Should be in RFC1123Z format (20190122T170000Z) or just
             yyyymmdd.
-        :param service: The service to connect to (f.e. `'s3'`).
         :return: A tuple containing the aforementioned credential scope.
         """
-        return timestamp[:8], self.region, service, "aws4_request"
+        return timestamp[:8], self.region, self.service, "aws4_request"
 
     def _get_credential(self, credential_scope: CredentialScope) -> str:
         return "/".join((self.access_key_id,) + credential_scope)
@@ -154,7 +157,6 @@ class AwsRequestSigner:
 
     def sign_with_headers(
         self,
-        service: str,
         method: str,
         url: str,
         headers: Optional[Mapping[str, str]] = None,
@@ -163,7 +165,6 @@ class AwsRequestSigner:
         """
         Get the required signature headers to perform a signed request.
 
-        :param service: The service to connect to (f.e. `'s3'`).
         :param method: The request method to use.
         :param url: The full URL to access.
         :param headers: Any request headers you want to sign as well.
@@ -195,7 +196,7 @@ class AwsRequestSigner:
 
         signed_headers = self._get_signed_headers(canonical_headers)
 
-        credential_scope = self._get_credential_scope(timestamp, service)
+        credential_scope = self._get_credential_scope(timestamp)
 
         signature = self._get_request_signature(
             method,
@@ -226,7 +227,6 @@ class AwsRequestSigner:
 
     def presign_url(
         self,
-        service: str,
         method: str,
         url: str,
         headers: Optional[Mapping[str, str]] = None,
@@ -238,7 +238,6 @@ class AwsRequestSigner:
         signature parameters in the query string and have controlled
         expiration.
 
-        :param service: The service to connect to (f.e. `'s3'`).
         :param method: The request method to use.
         :param url: The full URL to access.
         :param headers: Any request headers you want to sign as well.
@@ -268,7 +267,7 @@ class AwsRequestSigner:
 
         signed_headers = self._get_signed_headers(canonical_headers)
 
-        credential_scope = self._get_credential_scope(timestamp, service)
+        credential_scope = self._get_credential_scope(timestamp)
         credential = self._get_credential(credential_scope)
 
         query = parse_qsl(parsed_url.query, True)
@@ -311,6 +310,10 @@ class AwsRequestSigner:
         :param policy: The POST policy to sign.
         :return: All the required POST field to use the policy.
         """
+        assert (
+            self.service == "s3"
+        ), "Signing POST policies only applies to the S3 service."
+
         required_keys = {"expiration", "conditions"}
         if policy.keys() & required_keys != required_keys:
             raise ValueError(
@@ -319,7 +322,7 @@ class AwsRequestSigner:
 
         timestamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
 
-        credential_scope = self._get_credential_scope(timestamp, "s3")
+        credential_scope = self._get_credential_scope(timestamp)
         credential = self._get_credential(credential_scope)
 
         policy_json = json.dumps(policy).encode("utf-8")

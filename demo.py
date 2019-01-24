@@ -21,7 +21,7 @@ def main() -> None:
 
     # Create a request signer instance.
     request_signer = AwsRequestSigner(
-        AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+        AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, "s3"
     )
 
     #
@@ -32,9 +32,7 @@ def main() -> None:
     headers = {"Content-Type": "text/plain", "Content-Length": str(len(content))}
 
     # Add the authentication headers.
-    headers.update(
-        request_signer.sign_with_headers("s3", "PUT", URL, headers, content_hash)
-    )
+    headers.update(request_signer.sign_with_headers("PUT", URL, headers, content_hash))
 
     # Make the request.
     r = requests.put(URL, headers=headers, data=content)
@@ -50,9 +48,7 @@ def main() -> None:
     # Generate the pre-signed URL that includes the authentication
     # parameters. Allow the client to determine the contents by
     # settings the content_has to UNSIGNED-PAYLOAD.
-    presigned_url = request_signer.presign_url(
-        "s3", "PUT", URL, headers, UNSIGNED_PAYLOAD
-    )
+    presigned_url = request_signer.presign_url("PUT", URL, headers, UNSIGNED_PAYLOAD)
 
     # Perform the request.
     r = requests.put(presigned_url, headers=headers, data=content)

@@ -21,8 +21,9 @@ class AwsAuth(requests.auth.AuthBase):
         :param secret_access_key: The AWS secret access key to use for authentication.
         :param service: The service to connect to (f.e. `'s3'`).
         """
-        self.request_signer = AwsRequestSigner(region, access_key_id, secret_access_key)
-        self.service = service
+        self.request_signer = AwsRequestSigner(
+            region, access_key_id, secret_access_key, service
+        )
 
     def __call__(self, request: requests.PreparedRequest) -> requests.PreparedRequest:
         if isinstance(request.body, bytes):
@@ -33,7 +34,7 @@ class AwsAuth(requests.auth.AuthBase):
         assert isinstance(request.method, str)
         assert isinstance(request.url, str)
         auth_headers = self.request_signer.sign_with_headers(
-            self.service, request.method, request.url, request.headers, content_hash
+            request.method, request.url, request.headers, content_hash
         )
         request.headers.update(auth_headers)
         return request
