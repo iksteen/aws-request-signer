@@ -25,17 +25,6 @@ repos:
   rev: v0.660
   hooks:
   - id: mypy
-    args:
-    - --ignore-missing-imports
-    - --warn-unused-configs
-    - --disallow-untyped-defs
-    - --disallow-incomplete-defs
-    - --check-untyped-defs
-    - --disallow-untyped-decorators
-    - --no-implicit-optional
-    - --warn-redundant-casts
-    - --warn-unused-ignores
-    - --warn-return-any
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.1.0
