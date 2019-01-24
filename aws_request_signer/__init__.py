@@ -134,7 +134,7 @@ class AwsRequestSigner:
                 method,
                 path,
                 canonical_query,
-                "\n".join(f"{key}:{value}" for key, value in headers),
+                "\n".join("{}:{}".format(key, value) for key, value in headers),
                 "",  # Extra newline after canonical headers.
                 signed_headers,
                 content_hash,
