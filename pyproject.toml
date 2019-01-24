@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "aws-request-signer"
 version = "1.0.0"
-description = "A helper library that implements AWS Signature V4."
-authors = ["Ingmar Steen <iksteen@gmail.com>"]
+description = "A python library to sign AWS requests using AWS Signature V4."
 license = "MIT"
+authors = ["Ingmar Steen <iksteen@gmail.com>"]
+readme = "README.md"
+homepage = "https://www.github.com/iksteen/aws-request-signer"
+repository = "https://www.github.com/iksteen/aws-request-signer.git"
 
 [tool.poetry.dependencies]
 python = "^3.5"
