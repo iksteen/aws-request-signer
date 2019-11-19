@@ -3,8 +3,8 @@ import datetime
 import hashlib
 import hmac
 import json
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
-from typing import Dict, Optional, Tuple, List, Mapping, Any
 
 __all__ = ["AwsRequestSigner", "UNSIGNED_PAYLOAD"]
 

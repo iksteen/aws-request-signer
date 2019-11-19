@@ -78,11 +78,6 @@ poetry install -E demo
 poetry run pre-commit install
 ```
 
-**Note**: At the time of writing, the typeshed library that mypy uses
-contains an incorrect signature for the `requests.auth.AuthBase.__call__`
-method. The repository of aws-request-signer includes updated stubs for
-requests until the signature is fixed upstream.
-
 ## Release History
 
 * 1.0.0
