@@ -201,7 +201,7 @@ class AwsRequestSigner:
         signature = self._get_request_signature(
             method,
             parsed_url.path,
-            parse_qsl(parsed_url.query),
+            parse_qsl(parsed_url.query, keep_blank_values=True),
             canonical_headers,
             signed_headers,
             content_hash,
@@ -270,7 +270,7 @@ class AwsRequestSigner:
         credential_scope = self._get_credential_scope(timestamp)
         credential = self._get_credential(credential_scope)
 
-        query = parse_qsl(parsed_url.query, True)
+        query = parse_qsl(parsed_url.query, keep_blank_values=True)
         query.extend(
             (
                 ("X-Amz-Algorithm", self.algorithm),

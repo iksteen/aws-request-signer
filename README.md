@@ -80,6 +80,9 @@ poetry run pre-commit install
 
 ## Release History
 
+* Next Version
+    * Fix bug where `sign_with_headers` did not include valueless
+      query arguments in the signing process (f.e. `?acl`).
 * 1.0.0
     * Initial Release.
 
