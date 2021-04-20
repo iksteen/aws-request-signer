@@ -8,6 +8,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 __all__ = ["AwsRequestSigner", "UNSIGNED_PAYLOAD"]
 
+METHODS_WITHOUT_BODY = {"DELETE", "HEAD", "GET"}
 UNSIGNED_PAYLOAD = "UNSIGNED-PAYLOAD"
 
 CredentialScope = Tuple[str, str, str, str]
@@ -179,7 +180,7 @@ class AwsRequestSigner:
             headers = {}
 
         if content_hash is None:
-            if method == "GET":
+            if method in METHODS_WITHOUT_BODY:
                 content_hash = hashlib.sha256(b"").hexdigest()
             else:
                 raise ValueError(
