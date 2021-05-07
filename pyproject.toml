@@ -9,12 +9,12 @@ homepage = "https://www.github.com/iksteen/aws-request-signer"
 repository = "https://www.github.com/iksteen/aws-request-signer.git"
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.6.1"
 requests = {version = "^2.21",optional = true}
 requests_toolbelt = {version = "^0.8.0",optional = true}
 
 [tool.poetry.dev-dependencies]
-pre-commit = "^1.14"
+pre-commit = "^2.9.2"
 
 [tool.poetry.extras]
 requests = ["requests"]
