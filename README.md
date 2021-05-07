@@ -81,6 +81,8 @@ poetry run pre-commit install
 ## Release History
 
 * Next Version
+    * Assume empty content when signing a HEAD or DELETE request
+      just as we do when signing a GET request. Thanks @alvassin!
     * Fix bug where `sign_with_headers` did not include valueless
       query arguments in the signing process (f.e. `?acl`).
 * 1.0.0
