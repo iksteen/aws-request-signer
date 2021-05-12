@@ -80,7 +80,7 @@ poetry run pre-commit install
 
 ## Release History
 
-* Next Version
+* 1.1.0
     * Minimum supported python version is now 3.6.1.
     * Assume empty content when signing a HEAD or DELETE request
       just as we do when signing a GET request. Thanks @alvassin!
