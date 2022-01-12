@@ -4,7 +4,7 @@ import hashlib
 import hmac
 import json
 from typing import Any, Dict, List, Mapping, Optional, Tuple
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 __all__ = ["AwsRequestSigner", "UNSIGNED_PAYLOAD"]
 
@@ -131,7 +131,7 @@ class AwsRequestSigner:
             _get_credential_scope.
         :return: The signature for the request.
         """
-        canonical_query = urlencode(sorted(query))
+        canonical_query = urlencode(sorted(query), quote_via=quote)  # type: ignore
 
         canonical_request = "\n".join(
             (
@@ -300,7 +300,7 @@ class AwsRequestSigner:
                 parsed_url.scheme,
                 parsed_url.netloc,
                 parsed_url.path,
-                urlencode(query),
+                urlencode(query, quote_via=quote),  # type: ignore
                 parsed_url.fragment,
             )
         )

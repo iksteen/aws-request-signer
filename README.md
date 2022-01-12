@@ -81,7 +81,8 @@ poetry run pre-commit install
 ## Release History
 
 * Next Version
-    * Nothing yet.
+    * Use `quote` instead of the default `quote_plus` so query
+      arguments that contain spaces work (thanks @eraser-77).
 * 1.1.0
     * Minimum supported python version is now 3.6.1.
     * Assume empty content when signing a HEAD or DELETE request
