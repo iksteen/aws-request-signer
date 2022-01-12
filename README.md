@@ -80,6 +80,8 @@ poetry run pre-commit install
 
 ## Release History
 
+* Next Version
+    * Nothing yet.
 * 1.1.1
     * Use `quote` instead of the default `quote_plus` so query
       arguments that contain spaces work (thanks @eraser-77).
