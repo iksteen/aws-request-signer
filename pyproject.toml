@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aws-request-signer"
-version = "1.1.0"
+version = "1.1.1"
 description = "A python library to sign AWS requests using AWS Signature V4."
 license = "MIT"
 authors = ["Ingmar Steen <iksteen@gmail.com>"]
