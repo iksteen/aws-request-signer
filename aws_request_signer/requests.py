@@ -1,4 +1,5 @@
 import hashlib
+from typing import Optional
 
 import requests.auth
 
@@ -9,7 +10,7 @@ __all__ = ["AwsAuth"]
 
 class AwsAuth(requests.auth.AuthBase):
     def __init__(
-        self, region: str, access_key_id: str, secret_access_key: str, service: str
+        self, region: str, access_key_id: str, secret_access_key: str, service: str, session_token: Optional[str] = None
     ) -> None:
         """
         Intialize the authentication helper for requests. Use this with the
@@ -20,9 +21,10 @@ class AwsAuth(requests.auth.AuthBase):
         :param access_key_id: The AWS access key id to use for authentication.
         :param secret_access_key: The AWS secret access key to use for authentication.
         :param service: The service to connect to (f.e. `'s3'`).
+        :param session_token: Session token assigned when using STS (optional).
         """
         self.request_signer = AwsRequestSigner(
-            region, access_key_id, secret_access_key, service
+            region, access_key_id, secret_access_key, service, session_token
         )
 
     def __call__(self, request: requests.PreparedRequest) -> requests.PreparedRequest:

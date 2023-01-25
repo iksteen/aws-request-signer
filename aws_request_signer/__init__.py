@@ -18,7 +18,7 @@ class AwsRequestSigner:
     algorithm = "AWS4-HMAC-SHA256"
 
     def __init__(
-        self, region: str, access_key_id: str, secret_access_key: str, service: str
+        self, region: str, access_key_id: str, secret_access_key: str, service: str, session_token: Optional[str] = None
     ) -> None:
         """
         Create a new instance of the AwsRequestSigner.
@@ -39,6 +39,7 @@ class AwsRequestSigner:
         self.access_key_id = access_key_id
         self.secret_access_key = secret_access_key
         self.service = service
+        self.session_token = session_token
 
     def _get_credential_scope(self, timestamp: str) -> CredentialScope:
         """
@@ -190,6 +191,9 @@ class AwsRequestSigner:
         timestamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
 
         extra_headers = {"x-amz-content-sha256": content_hash, "x-amz-date": timestamp}
+
+        if self.session_token:
+            extra_headers["x-amz-security-token"] = self.session_token
 
         canonical_headers = self._get_canonical_headers(
             parsed_url.netloc, {**headers, **extra_headers}
