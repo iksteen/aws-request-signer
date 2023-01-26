@@ -137,7 +137,7 @@ class AwsRequestSigner:
             _get_credential_scope.
         :return: The signature for the request.
         """
-        canonical_query = urlencode(sorted(query), quote_via=quote)  # type: ignore
+        canonical_query = urlencode(sorted(query), quote_via=quote)
 
         canonical_request = "\n".join(
             (
@@ -309,7 +309,7 @@ class AwsRequestSigner:
                 parsed_url.scheme,
                 parsed_url.netloc,
                 parsed_url.path,
-                urlencode(query, quote_via=quote),  # type: ignore
+                urlencode(query, quote_via=quote),
                 parsed_url.fragment,
             )
         )
