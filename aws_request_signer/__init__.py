@@ -18,7 +18,12 @@ class AwsRequestSigner:
     algorithm = "AWS4-HMAC-SHA256"
 
     def __init__(
-        self, region: str, access_key_id: str, secret_access_key: str, service: str, session_token: Optional[str] = None
+        self,
+        region: str,
+        access_key_id: str,
+        secret_access_key: str,
+        service: str,
+        session_token: Optional[str] = None,
     ) -> None:
         """
         Create a new instance of the AwsRequestSigner.

@@ -10,7 +10,12 @@ __all__ = ["AwsAuth"]
 
 class AwsAuth(requests.auth.AuthBase):
     def __init__(
-        self, region: str, access_key_id: str, secret_access_key: str, service: str, session_token: Optional[str] = None
+        self,
+        region: str,
+        access_key_id: str,
+        secret_access_key: str,
+        service: str,
+        session_token: Optional[str] = None,
     ) -> None:
         """
         Intialize the authentication helper for requests. Use this with the
