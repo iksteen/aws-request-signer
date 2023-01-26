@@ -81,7 +81,8 @@ poetry run pre-commit install
 ## Release History
 
 * Next Version
-    * Nothing yet.
+    * Add support for passing a security token to `AwsRequestSigner`
+      and `AwsAuth` helper for request. Thanks @ajpl.
 * 1.1.1
     * Use `quote` instead of the default `quote_plus` so query
       arguments that contain spaces work (thanks @eraser-77).
