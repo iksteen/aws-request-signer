@@ -80,6 +80,8 @@ poetry run pre-commit install
 
 ## Release History
 
+* Next Version
+    * Nothing yet.
 * 1.2.0
     * Add support for passing a security token to `AwsRequestSigner`
       and `AwsAuth` helper for request. Thanks @ajpl.
