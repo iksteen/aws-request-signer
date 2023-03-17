@@ -81,7 +81,8 @@ poetry run pre-commit install
 ## Release History
 
 * Next Version
-    * Nothing yet.
+    * Add `py.typed` file so mypy can check calls to aws-request-signer
+      when used as a dependency. Thanks @berzi.
 * 1.2.0
     * Add support for passing a security token to `AwsRequestSigner`
       and `AwsAuth` helper for request. Thanks @ajpl.
