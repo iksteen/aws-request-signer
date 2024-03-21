@@ -265,7 +265,7 @@ class AwsRequestSigner:
 
         if content_hash is None:
             if method == "GET":
-                content_hash = hashlib.sha256(b"").hexdigest()
+                content_hash = "UNSIGNED-PAYLOAD"
             else:
                 raise ValueError(
                     "content_hash must be specified for {} request".format(method)
