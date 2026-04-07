@@ -193,7 +193,9 @@ class AwsRequestSigner:
                     "content_hash must be specified for {} request".format(method)
                 )
 
-        timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        timestamp = datetime.datetime.now(datetime.timezone.utc).strftime(
+            "%Y%m%dT%H%M%SZ"
+        )
 
         extra_headers = {"x-amz-content-sha256": content_hash, "x-amz-date": timestamp}
 
@@ -271,7 +273,9 @@ class AwsRequestSigner:
                     "content_hash must be specified for {} request".format(method)
                 )
 
-        timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        timestamp = datetime.datetime.now(datetime.timezone.utc).strftime(
+            "%Y%m%dT%H%M%SZ"
+        )
 
         canonical_headers = self._get_canonical_headers(parsed_url.netloc, headers)
 
@@ -330,7 +334,9 @@ class AwsRequestSigner:
                 "POST policy should contain expiration and conditions keys"
             )
 
-        timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        timestamp = datetime.datetime.now(datetime.timezone.utc).strftime(
+            "%Y%m%dT%H%M%SZ"
+        )
 
         credential_scope = self._get_credential_scope(timestamp)
         credential = self._get_credential(credential_scope)
