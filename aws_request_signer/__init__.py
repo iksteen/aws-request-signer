@@ -344,6 +344,16 @@ class AwsRequestSigner:
         credential_scope = self._get_credential_scope(timestamp)
         credential = self._get_credential(credential_scope)
 
+        extra_fields = {
+            "x-amz-algorithm": self.algorithm,
+            "x-amz-credential": credential,
+            "x-amz-date": timestamp,
+        }
+
+        policy = policy.copy()
+        policy["conditions"] = list(policy["conditions"])
+        policy["conditions"].extend({key: value} for key, value in extra_fields.items())
+
         policy_json = json.dumps(policy).encode("utf-8")
         encoded_policy = base64.b64encode(policy_json).decode("utf-8")
 
@@ -351,8 +361,6 @@ class AwsRequestSigner:
 
         return {
             "policy": encoded_policy,
-            "x-amz-algorithm": self.algorithm,
-            "x-amz-credential": credential,
-            "x-amz-date": timestamp,
             "x-amz-signature": signature,
+            **extra_fields,
         }

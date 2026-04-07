@@ -113,7 +113,11 @@ def main() -> None:
     )
     policy = {
         "expiration": expiration.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "conditions": [{"bucket": "demo"}],
+        "conditions": [
+            {"bucket": "demo"},
+            {"Content-Type": "text/plain"},
+            {"key": "hello_world.txt"},
+        ],
     }
 
     # Get the required form fields to use the policy.

@@ -82,6 +82,9 @@ poetry run pre-commit install
 
 * Next Version
     * Minimum supported python version is now 3.10.
+    * `x-amz-algorithm`, `x-amz-credential` and `x-amz-date` conditions
+      are now automatically added to the S3 post policy when using
+      `sign_s3_post_policy`.
     * Pre-signed URLs without a payload now default to `UNSIGNED-PAYLOAD`
       when the service is s3 and the protocol is https. This *should* be
       backwards compatible unless you depended on the incorrect behavior
