@@ -77,7 +77,9 @@ def main() -> None:
     #
 
     # Create a policy, only restricting bucket and expiration.
-    expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
+    expiration = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(
+        minutes=1
+    )
     policy = {
         "expiration": expiration.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "conditions": [{"bucket": "demo"}],
