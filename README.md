@@ -82,6 +82,10 @@ poetry run pre-commit install
 
 * Next Version
     * Minimum supported python version is now 3.10.
+    * Pre-signed URLs without a payload now default to `UNSIGNED-PAYLOAD`
+      when the service is s3 and the protocol is https. This *should* be
+      backwards compatible unless you depended on the incorrect behavior
+      for some reason. Thanks @LiamBindle.
     * Instead of using `datetime.utcnow()` use `datetime.now(tz=utc)`
       to prevent deprecation warning. Thanks @nightcityblade.
     * Add `py.typed` file so mypy can check calls to aws-request-signer

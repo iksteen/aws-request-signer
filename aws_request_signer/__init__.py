@@ -266,8 +266,11 @@ class AwsRequestSigner:
             headers = {}
 
         if content_hash is None:
-            if method == "GET":
-                content_hash = hashlib.sha256(b"").hexdigest()
+            if method in METHODS_WITHOUT_BODY:
+                if parsed_url.scheme == "https" and self.service == "s3":
+                    content_hash = UNSIGNED_PAYLOAD
+                else:
+                    content_hash = hashlib.sha256(b"").hexdigest()
             else:
                 raise ValueError(
                     "content_hash must be specified for {} request".format(method)

@@ -11,7 +11,8 @@ AWS_REGION = ""
 AWS_ACCESS_KEY_ID = "minio"
 AWS_SECRET_ACCESS_KEY = "minio123"
 
-URL = "http://127.0.0.1:9000/demo/hello_world.txt"
+URL_PREFIX = "http://127.0.0.1:9000"
+URL = f"{URL_PREFIX}/demo/hello_world.txt"
 
 
 def main() -> None:
@@ -38,6 +39,21 @@ def main() -> None:
     r = requests.put(URL, headers=headers, data=content)
     r.raise_for_status()
 
+    # Methods without payload (HEAD/GET/DELETE).
+    headers = request_signer.sign_with_headers("HEAD", URL)
+    r = requests.head(URL, headers=headers)
+    r.raise_for_status()
+    assert r.headers["content-length"] == str(len(content))
+
+    headers = request_signer.sign_with_headers("GET", URL)
+    r = requests.get(URL, headers=headers)
+    r.raise_for_status()
+    assert r.content == content
+
+    headers = request_signer.sign_with_headers("DELETE", URL)
+    r = requests.delete(URL, headers=headers)
+    r.raise_for_status()
+
     #
     # Use AWS request signer to generate a pre-signed URL.
     #
@@ -54,6 +70,21 @@ def main() -> None:
     r = requests.put(presigned_url, headers=headers, data=content)
     r.raise_for_status()
 
+    # Methods without payload (GET/HEAD/DELETE).
+    presigned_url = request_signer.presign_url("HEAD", URL)
+    r = requests.head(presigned_url)
+    r.raise_for_status()
+    assert r.headers["content-length"] == str(len(content))
+
+    presigned_url = request_signer.presign_url("GET", URL)
+    r = requests.get(presigned_url)
+    r.raise_for_status()
+    assert r.content == content
+
+    presigned_url = request_signer.presign_url("DELETE", URL)
+    r = requests.delete(presigned_url)
+    r.raise_for_status()
+
     #
     # Use AWS request signer for requests helper to perform requests.
     #
@@ -62,7 +93,7 @@ def main() -> None:
     session = requests.Session()
     session.auth = AuthHandler(
         {
-            "http://127.0.0.1:9000": AwsAuth(
+            URL_PREFIX: AwsAuth(
                 AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, "s3"
             )
         }
