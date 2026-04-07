@@ -81,6 +81,9 @@ poetry run pre-commit install
 ## Release History
 
 * Next Version
+    * Minimum supported python version is now 3.10.
+    * Instead of using `datetime.utcnow()` use `datetime.now(tz=utc)`
+      to prevent deprecation warning. Thanks @nightcityblade.
     * Add `py.typed` file so mypy can check calls to aws-request-signer
       when used as a dependency. Thanks @berzi.
 * 1.2.0

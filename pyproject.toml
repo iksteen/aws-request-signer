@@ -1,25 +1,34 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "aws-request-signer"
 version = "1.2.0"
 description = "A python library to sign AWS requests using AWS Signature V4."
-license = "MIT"
-authors = ["Ingmar Steen <iksteen@gmail.com>"]
 readme = "README.md"
-homepage = "https://www.github.com/iksteen/aws-request-signer"
-repository = "https://www.github.com/iksteen/aws-request-signer.git"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  { name = "Ingmar Steen", email = "iksteen@gmail.com" },
+]
+dependencies = []
 
-[tool.poetry.dependencies]
-python = "^3.6.1"
-requests = {version = "^2.21",optional = true}
-requests_toolbelt = {version = "^0.8.0",optional = true}
+[project.optional-dependencies]
+requests = [
+  "requests>=2.21,<3",
+]
+demo = [
+  "requests>=2.21,<3",
+  "requests_toolbelt>=1.0.0,<2.0.0",
+]
+dev = [
+  "pre-commit>=4.3.1,<5",
+]
 
-[tool.poetry.dev-dependencies]
-pre-commit = "^2.9.2"
+[project.urls]
+Homepage = "https://github.com/iksteen/aws-request-signer"
+Repository = "https://github.com/iksteen/aws-request-signer.git"
 
-[tool.poetry.extras]
-requests = ["requests"]
-demo = ["requests", "requests_toolbelt"]
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.black]
+target-version = ["py310"]
